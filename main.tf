@@ -31,7 +31,7 @@ locals {
 }
 
 resource "aws_subnet" "public_subnet" {
-  count = 2
+  count = length(local.public_cidr)
 
   vpc_id            = aws_vpc.first_vpc.id
   cidr_block        = local.public_cidr[count.index]
@@ -44,7 +44,7 @@ resource "aws_subnet" "public_subnet" {
 
 # Create Private Subnets
 resource "aws_subnet" "private_subnet" {
-  count = 2
+  count = length(local.private_cidr)
 
   vpc_id            = aws_vpc.first_vpc.id
   cidr_block        = local.private_cidr[count.index]
@@ -135,3 +135,4 @@ resource "aws_route_table_association" "private_rt_association" {
   subnet_id      = aws_subnet.private_subnet[count.index].id
   route_table_id = aws_route_table.private_route_table[count.index].id 
 }
+
