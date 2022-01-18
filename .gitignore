@@ -1,5 +1,11 @@
 .terraform.lock.hcl
 .terraform
-terraform.tfstate
-terraform.tfstate.backup
+backend-config/.terraform
+backend-config/.terraform.lock.hcl
+network-config/.terraform
+network-config/.terraform.lock.hcl
+
+
+
+
 

@@ -1,7 +1,6 @@
-# Create terraform block to define backend
 terraform {
   backend "s3" {
-    bucket = "terraform-state-bucket-9086"
+    bucket = "terraform-state-bucket-180122"
     key    = "global/s3/terraform.tfstate"
     dynamodb_table = "terraform-state-lock"
     region = "us-east-1"
@@ -24,38 +23,6 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = "us-east-1"
-}
-
-# Create S3 bucket to store the terraform state file
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "terraform-state-bucket-9086"
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-        apply_server_side_encryption_by_default {
-            sse_algorithm = "AES256"
-        }
-    }
-  }
-}
-
-# Create dynamodb table to create a lock on the terraform state file
-resource "aws_dynamodb_table" "terraform_state_lock" {
-  name = "terraform-state-lock"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
 }
 
 # Create a VPC
