@@ -4,5 +4,3 @@ backend-config/.terraform
 backend-config/.terraform.lock.hcl
 network-config/.terraform
 network-config/.terraform.lock.hcl
-
-
