@@ -17,10 +17,6 @@ provider "aws" {
 # Create S3 bucket to store the terraform state file
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "terraform-state-bucket-180122"
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
   versioning {
     enabled = true
   }
