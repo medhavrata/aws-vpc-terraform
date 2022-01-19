@@ -1,3 +1,13 @@
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-bucket-180122"
+    key    = "global/s3/terraform.tfstate"
+    dynamodb_table = "terraform-state-lock"
+    region = "us-east-1"
+    encrypt = true
+  }
+}
+
 # Configure the Terraform Block
 terraform {
   required_providers {
