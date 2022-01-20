@@ -2,7 +2,7 @@
 terraform {
   backend "s3" {
       bucket = "terraform-state-bucket-180122"
-      key = "global/s3/ec2/terraform.tfstate"
+      key = "ec2-config/terraform.tfstate"
       dynamodb_table = "terraform-state-lock"
       region = "us-east-1"
       encrypt = true
@@ -43,16 +43,11 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-# Define the module
-module "network" {
-    source = "../network-config"   
-}
-
 # Define the Security Group
 resource "aws_security_group" "public_ec2_01_sg" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = module.network.vpc_id
+  vpc_id      = aws_vpc.first_vpc.id
 
   ingress {
     description      = "SSH"
@@ -70,7 +65,7 @@ resource "aws_security_group" "public_ec2_01_sg" {
   }
 
   tags = {
-    Name = "allow_tls"
+    Name = "allow_ssh"
   }
 }
 
@@ -79,15 +74,11 @@ resource "aws_instance" "public_ec2_01" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   associate_public_ip_address = true
-  subnet_id = module.network.sub_id
+  subnet_id = aws_subnet.public_subnet[0].id
   security_groups = [aws_security_group.public_ec2_01_sg.id]
   key_name = "public_ec2_01_kp" # this is manually created, delete this key
 
   tags = {
     Name = "Public-EC2"
   }
-
-  depends_on = [
-    module.network.id
-  ]
 }
