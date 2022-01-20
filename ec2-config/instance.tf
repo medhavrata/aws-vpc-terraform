@@ -1,0 +1,93 @@
+# Configure the S3 backend
+terraform {
+  backend "s3" {
+      bucket = "terraform-state-bucket-180122"
+      key = "global/s3/ec2/terraform.tfstate"
+      dynamodb_table = "terraform-state-lock"
+      region = "us-east-1"
+      encrypt = true
+  }
+}
+
+# Configure the terraform block
+terraform {
+  required_providers {
+      aws = {
+          source = "hashicorp/aws"
+          version = "~> 3.0"
+      }
+  }
+
+  required_version = ">= 0.14.9"
+}
+
+# Configure the provider
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Filter the aws ami
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
+# Define the module
+module "network" {
+    source = "../network-config"   
+}
+
+# Define the Security Group
+resource "aws_security_group" "public_ec2_01_sg" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = module.network.vpc_id
+
+  ingress {
+    description      = "SSH"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow_tls"
+  }
+}
+
+# EC2 Instance
+resource "aws_instance" "public_ec2_01" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.micro"
+  associate_public_ip_address = true
+  subnet_id = module.network.sub_id
+  security_groups = [aws_security_group.public_ec2_01_sg.id]
+  key_name = "public_ec2_01_kp" # this is manually created, delete this key
+
+  tags = {
+    Name = "Public-EC2"
+  }
+
+  depends_on = [
+    module.network.id
+  ]
+}
