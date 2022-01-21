@@ -29,6 +29,14 @@ resource "aws_security_group" "public_ec2_01_sg" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description      = "HTTP"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -50,6 +58,12 @@ resource "aws_instance" "public_ec2_01" {
   security_groups = [aws_security_group.public_ec2_01_sg.id]
   key_name = "public_ec2_01_kp" # this is manually created, delete this key
 
+  user_data = <<-EOF
+  #!/bin/bash
+  sudo apt update -y
+  sudo apt install apache2 -y
+
+  EOF
   tags = {
     Name = "Public-EC2"
   }
