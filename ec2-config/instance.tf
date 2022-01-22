@@ -19,29 +19,29 @@ data "aws_ami" "ubuntu" {
 resource "aws_security_group" "public_ec2_01_sg" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.first_vpc.id
+  vpc_id      = data.terraform_remote_state.network-config.outputs.vpc_id
 
   ingress {
-    description      = "SSH"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    description      = "HTTP"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -51,12 +51,12 @@ resource "aws_security_group" "public_ec2_01_sg" {
 
 # EC2 Instance
 resource "aws_instance" "public_ec2_01" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t2.micro"
   associate_public_ip_address = true
-  subnet_id = aws_subnet.public_subnet[0].id
-  security_groups = [aws_security_group.public_ec2_01_sg.id]
-  key_name = "public_ec2_01_kp" # this is manually created, delete this key
+  subnet_id                   = data.terraform_remote_state.network-config.outputs.public_subnets[0].id
+  security_groups             = [aws_security_group.public_ec2_01_sg.id]
+  key_name                    = "public_ec2_01_kp" # this is manually created, delete this key
 
   user_data = <<-EOF
   #!/bin/bash
@@ -68,4 +68,3 @@ resource "aws_instance" "public_ec2_01" {
     Name = "Public-EC2"
   }
 }
-
