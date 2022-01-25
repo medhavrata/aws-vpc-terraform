@@ -1,19 +1,18 @@
-# Configure the S3 backend
 terraform {
   backend "s3" {
     bucket         = "terraform-state-bucket-180122"
-    key            = "ec2-config/terraform.tfstate"
+    key            = "network-config/terraform.tfstate"
     dynamodb_table = "terraform-state-lock"
     region         = "us-east-1"
     encrypt        = true
   }
 }
 
-# Configure the terraform block
+# Configure the Terraform Block
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
+      source  = "hashicorp/aws" # this defaults to registry.terraform.io/hashicorp/aws
       version = "~> 3.0"
     }
   }
@@ -21,7 +20,7 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-# Configure the provider
+# Configure the AWS Provider
 provider "aws" {
   region = "us-east-1"
 }
