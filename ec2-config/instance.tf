@@ -1,11 +1,9 @@
-# EC2 Instance
-resource "aws_instance" "private_ec2_01" {
-  ami                         = data.aws_ami.ubuntu.id
+# Deploy EC2 Instances via Auto Scaling Group
+resource "aws_launch_configuration" "ec2_launch" {
+  image_id                    = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
   associate_public_ip_address = false
-  subnet_id                   = data.terraform_remote_state.network-config.outputs.private_subnets[0].id
   security_groups             = [aws_security_group.private_ec2_01_sg.id]
-  key_name                    = "public_ec2_01_kp" # this is manually created, delete this key
 
   user_data = <<-EOF
   #!/bin/bash
@@ -13,7 +11,25 @@ resource "aws_instance" "private_ec2_01" {
   sudo apt install apache2 -y
 
   EOF
-  tags = {
-    Name = "Private-EC2"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "asg_01" {
+  launch_configuration = aws_launch_configuration.ec2_launch.name
+  vpc_zone_identifier  = [for subnet in data.terraform_remote_state.network-config.outputs.private_subnets : subnet.id]
+
+  target_group_arns = [aws_lb_target_group.asg_tg.arn]
+  health_check_type = "ELB"
+
+  min_size = 2
+  max_size = 10
+
+  tag {
+    key                 = "Name"
+    value               = "terraform-asg"
+    propagate_at_launch = true
   }
 }
