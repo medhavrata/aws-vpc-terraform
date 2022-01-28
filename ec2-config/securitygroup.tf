@@ -1,13 +1,13 @@
 # Define the Security Group
 resource "aws_security_group" "private_ec2_01_sg" {
-  name        = "allow_ssh"
-  description = "Allow SSH traffic with VPC"
+  name        = "allow_http"
+  description = "Allow HTTP traffic with VPC"
   vpc_id      = data.terraform_remote_state.network-config.outputs.vpc_id
 
   ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [data.terraform_remote_state.network-config.outputs.vpc_cidr_blocks]
   }
@@ -20,7 +20,7 @@ resource "aws_security_group" "private_ec2_01_sg" {
   }
 
   tags = {
-    Name = "allow_ssh"
+    Name = "allow_http"
   }
 }
 
