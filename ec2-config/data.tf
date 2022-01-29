@@ -24,3 +24,17 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical
 }
+
+# Below is the policy document which autoscaling and EC2 instance will assume
+# This will not define any permissions, just the trust policy
+# Need to provide both EC2 & Autoscaling group in the trust policy otherwise it won't work
+data "aws_iam_policy_document" "ec2_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com", "autoscaling.amazonaws.com"]
+    }
+  }
+}

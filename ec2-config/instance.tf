@@ -4,6 +4,8 @@ resource "aws_launch_configuration" "ec2_launch" {
   instance_type               = "t2.micro"
   associate_public_ip_address = false
   security_groups             = [aws_security_group.private_ec2_01_sg.id]
+  key_name                    = "public_ec2_01_kp"
+  iam_instance_profile        = aws_iam_instance_profile.s3_access_profile.name
 
   user_data = <<-EOF
   #!/bin/bash
@@ -26,7 +28,6 @@ resource "aws_autoscaling_group" "asg_01" {
 
   min_size = 2
   max_size = 10
-
   tag {
     key                 = "Name"
     value               = "terraform-asg"
