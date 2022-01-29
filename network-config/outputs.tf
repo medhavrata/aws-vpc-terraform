@@ -1,15 +1,15 @@
 output "vpc_id" {
-  value = aws_vpc.first_vpc.id
+  value = module.create_vpc.vpc_id
 }
 
 output "public_subnets" {
-  value = aws_subnet.public_subnet
+  value = module.create_vpc.public_subnets
 }
 
 output "private_subnets" {
-  value = aws_subnet.private_subnet
+  value = module.create_vpc.private_subnets
 }
 
 output "vpc_cidr_blocks" {
-  value = aws_vpc.first_vpc.cidr_block
+  value = module.create_vpc.vpc_cidr_blocks
 }
