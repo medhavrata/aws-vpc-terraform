@@ -38,3 +38,9 @@ data "aws_iam_policy_document" "ec2_assume_role_policy" {
     }
   }
 }
+
+# This data resource will fetch the zone_id of the cloud99.click domain
+data "aws_route53_zone" "cloud99" {
+  name         = "cloud99.click"
+  private_zone = false
+}
