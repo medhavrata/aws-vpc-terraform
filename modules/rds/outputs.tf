@@ -1,3 +1,9 @@
-output "db_secret" {
-  value = jsondecode(data.aws_secretsmanager_secret_version.secret_version.secret_string)["MyPassword"]
+output "sql_address" {
+  value       = aws_db_instance.mysql_db.address
+  description = "Connect to the database at this endpoint"
+}
+
+output "sql_port" {
+  value       = aws_db_instance.mysql_db.port
+  description = "The port the database is listening on"
 }
