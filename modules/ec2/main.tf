@@ -4,8 +4,7 @@ resource "aws_launch_configuration" "ec2_launch" {
   instance_type               = "t2.micro"
   associate_public_ip_address = false
   security_groups             = [aws_security_group.private_ec2_01_sg.id]
-  key_name                    = "public_ec2_01_kp"
-  iam_instance_profile        = aws_iam_instance_profile.s3_access_profile.name
+  iam_instance_profile        = aws_iam_instance_profile.session_manager_access.name
 
   user_data = <<-EOF
   #!/bin/bash
