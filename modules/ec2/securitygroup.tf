@@ -19,7 +19,6 @@ resource "aws_security_group" "private_ec2_01_sg" {
     protocol    = "tcp"
     cidr_blocks = [data.terraform_remote_state.network-config.outputs.vpc_cidr_blocks]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
