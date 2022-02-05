@@ -7,8 +7,6 @@ data "terraform_remote_state" "network-config" {
   }
 }
 
-
-# Filter the aws ami
 data "aws_ami" "ubuntu" {
   most_recent = true
 

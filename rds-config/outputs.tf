@@ -1,7 +1,7 @@
 output "sql_address" {
-    value = module.rds_module.sql_address
+  value = module.db.db_instance_address
 }
 
 output "sql_port" {
-    value = module.rds_module.sql_port
+  value = module.db.db_instance_port
 }
