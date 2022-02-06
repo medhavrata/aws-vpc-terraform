@@ -29,11 +29,7 @@ module "asg" {
   instance_type               = "t2.micro"
   associate_public_ip_address = false
   security_groups             = [module.web_server_sg.security_group_id]
-  # security_groups             = [module.testing_sg.security_group_id]
-  # key_name = "public_ec2_01_kp"
-  iam_instance_profile_name = aws_iam_instance_profile.session_manager_access.name
-  # ebs_optimized     = true
-  # enable_monitoring = true
+  iam_instance_profile_name   = aws_iam_instance_profile.session_manager_access.name
 
   user_data = <<-EOF
   #!/bin/bash
@@ -76,17 +72,6 @@ module "alb" {
       name_prefix      = "pref-"
       backend_protocol = "HTTP"
       backend_port     = 80
-      # target_type      = "instance"
-      # targets = [
-      #   {
-      #     target_id = "i-0123456789abcdefg"
-      #     port      = 80
-      #   },
-      #   {
-      #     target_id = "i-a1b2c3d4e5f6g7h8i"
-      #     port      = 8080
-      #   }
-      # ]
     }
   ]
 
@@ -115,27 +100,6 @@ module "alb" {
 ###########################################################################################################################
 # Creating the Route53 Record for the Domain
 # ###########################################################################################################################
-# module "records" {
-#   source  = "terraform-aws-modules/route53/aws//modules/records"
-#   version = "~> 2.0"
-
-#   zone_name = data.aws_route53_zone.cloud99.name
-#   # zone_id = data.aws_route53_zone.cloud99.zone_id
-
-#   records = [
-#     {
-#       name = "cloud99.click"
-#       type = "A"
-#       alias = {
-#         name                   = module.alb.lb_dns_name
-#         zone_id                = module.alb.lb_zone_id
-#       }
-#     },
-#   ]
-
-#   depends_on = [module.alb]
-# }
-
 resource "aws_route53_record" "dns_val" {
   for_each = {
     for dvo in aws_acm_certificate.cloud99_cert.domain_validation_options : dvo.domain_name => {
@@ -151,30 +115,9 @@ resource "aws_route53_record" "dns_val" {
   ttl             = 60
   type            = each.value.type
   zone_id         = data.aws_route53_zone.cloud99.zone_id
-  # name    = "cloud99.click"
-  # type    = "A"
-
-  # alias {
-  #   name                   = module.alb.lb_dns_name
-  #   zone_id                = module.alb.lb_zone_id
-  #   evaluate_target_health = true
-  # }
 }
 
 resource "aws_route53_record" "www" {
-  # for_each = {
-  #   for dvo in aws_acm_certificate.cloud99_cert.domain_validation_options : dvo.domain_name => {
-  #     name   = dvo.resource_record_name
-  #     record = dvo.resource_record_value
-  #     type   = dvo.resource_record_type
-  #   }
-  # }
-
-  # allow_overwrite = true
-  # name            = each.value.name
-  # records         = [each.value.record]
-  # ttl             = 60
-  # type            = each.value.type
   zone_id = data.aws_route53_zone.cloud99.zone_id
   name    = "cloud99.click"
   type    = "A"
