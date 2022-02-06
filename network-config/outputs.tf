@@ -1,15 +1,17 @@
 output "vpc_id" {
-  value = module.create_vpc.vpc_id
+  description = "The ID of the VPC"
+  value       = module.vpc.vpc_id
 }
 
 output "public_subnets" {
-  value = module.create_vpc.public_subnets
+  description = "List of IDs of public subnets"
+  value       = module.vpc.public_subnets
 }
 
 output "private_subnets" {
-  value = module.create_vpc.private_subnets
+  value = module.vpc.private_subnets
 }
 
 output "vpc_cidr_blocks" {
-  value = module.create_vpc.vpc_cidr_blocks
+  value = module.vpc.vpc_cidr_block
 }
